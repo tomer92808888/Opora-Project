@@ -3,7 +3,9 @@
 ## Installation
 
 ```bash
-
+git clone https://github.com/tomer92808888/Opora-Project.git
+cd Opora-Project
+pip install -r requirements.txt
 ```
 
 ## Running
