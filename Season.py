@@ -1,4 +1,5 @@
 # Importing the essential libraries
+from fastapi import HTTPException
 import pandas as pd
 
 # Importing the essential classes
@@ -14,13 +15,16 @@ DATA = data.clean()
 class Season():
     def __init__(self, year):
         """
-        Initializes the class with the given season and checks if the input is a string if not it raises an error
+        Initializes the class with the given season and checks if the input is a string if not it raises an error and if the season exists in the dataset
         """
         if type(year) == int:
             self.YEAR = year
-            self.RACES = [Race_Wins(i) for i in DATA['races'][DATA['races']['year'] == self.YEAR]['raceId']]
+            if year >= 1950 and year <= 2021:
+                self.RACES = [Race_Wins(i) for i in DATA['races'][DATA['races']['year'] == self.YEAR]['raceId']]
+            else:
+                raise HTTPException(status_code=404 ,detail="The season isn't in the dataset")
         else:
-            raise TypeError("Year must be an int")
+            raise HTTPException(status_code=404 ,detail="Season must be an int")
     
     def get_year(self) -> int:
         """

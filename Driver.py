@@ -1,4 +1,5 @@
 # Importing the essential libraries
+from fastapi import HTTPException
 import pandas as pd
 
 # Importing the essential classes
@@ -30,16 +31,21 @@ class Driver():
         if is_int(driver_id_or_name):
             driver_id_or_name = int(driver_id_or_name)
             self.ID = driver_id_or_name
+            if self.ID < 1 or self.ID > 854:
+                raise HTTPException(status_code=404 ,detail= "The driver ID is not in the dataset")
         # Checks if the value is a string
         elif type(driver_id_or_name) == str:
             # Splitting the string into forename and surname to get the driver's ID
             name = driver_id_or_name.split(" ")
             forename = name[0]
             surname = " ".join(name[1:])
-            self.ID = DATA['drivers'][(DATA['drivers']['forename'] == forename) & (DATA['drivers']['surname'] == surname)]['driverId'].values[0]
+            try:
+                self.ID = DATA['drivers'][(DATA['drivers']['forename'] == forename) & (DATA['drivers']['surname'] == surname)]['driverId'].values[0]
+            except:
+                raise HTTPException(status_code=404 ,detail="The driver name is not in the dataset")
         else:
             # If the value is not a string or int, raise an error
-            raise TypeError("Driver's ID must be an int or Driver's name must be a string")
+            raise HTTPException(status_code=404 ,detail="Driver's ID must be an int or Driver's name must be a string")
 
     def get_ID(self) -> int:
         """
